@@ -67,7 +67,7 @@ Dname varchar(25),
 DepNo numeric(3),
 MgrSSN numeric(9),
 MgrSDate date,
-foreign key(MgrSSN) references Employee(SSN),
+foreign key(MgrSSN) references Employee(SSN) on delete set null,
 primary key(DepNo)
 );
 create table Employee(
@@ -377,7 +377,10 @@ select pname from project,works_on where project.pnumber=works_on.pno and works_
 select fname,lname from employee where employee.ssn in (select essn from works_on where works_on.pno=(select pno from project where pname='Middleware'));
 
 /*23*/
-alter table department
-add constraint c2 on mgrssn delete set null;
 delete from employee
-where salary<(select avg(salary) from employee) on cascade set null;
+where salary<(select avg(salary) from employee);
+
+/*24*/
+update employee
+set salary=salary+20000
+where depno=(select depno from department where dname='HR') and salary > 9000;
