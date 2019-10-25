@@ -1,0 +1,92 @@
+﻿﻿select * from department;
+select * from course;
+select * from teach;
+select * from section;
+select * from student;
+select * from take;
+select * from instructor;
+/*1*/
+insert into instructor
+values('132','Dr. James','AProfessor',135000,null);
+select * from instructor where depname is null;
+
+/*2*/
+select * from instructor where depname is not null;
+
+/*3*/
+select depname,count(*) from teach natural join course where year=2010 and sem=2
+group by depname;
+
+/*4*/
+select ccode from teach where sem=2 and year=2009 and ccode not in (select ccode from teach where sem=2 and year=2010);
+
+/*5*/
+select depname from instructor group by depname having avg(salary)>=all(select avg(salary) from instructor group by depname);
+
+/*6 Here sem=fall is 4 and sem=Spring */
+select course_id
+		from section as S
+		where semester=’4’ and year=2009
+		and exists 
+         (select * 
+         from section as T
+		where semester=’5’ and year=2010 and
+		S.course_id =T.course_id)
+/*7 */
+select T.ccode
+from course as T 
+where unique(select R.ccode
+from section as R
+where T.course_id=R.ccode and R.year=2009);
+/*
+create user user2 password 'user2'
+grant select on instructor to user2
+revoke select on instructor from user2
+
+create user user1 password 'user1'
+grant select on instructor to user1 
+revoke select on instructor from user1
+*/
+/*8 */
+select dept_name, avg_salary
+	from (select dept_name, avg(salary) as avg_salary
+      from instructor group by dept_name)
+	where avg_salary>42000;
+/*9*/
+select max(tot_salary)
+	from (select dept_name, sum(salary) as tot_salary from  instructor group by dept_name);
+
+/*10*/
+with max_budget(value) as 
+     (select max(budget) from department) 
+  select budget from department, max_budget where   
+  deparment.budget=max_budget.value;
+
+/*11*/
+with dept_total(dept_name, value) as (select dept_name, sum(salary) from instructor group by dept_name),
+dept_total_avg(value) as 
+(select avg(value) from dept_total)
+ select dept_name 
+ from dept_total, dept_total_avg 
+ where dept_total.value > = dept_total_avg.value;
+
+ /*12*/
+  select dept_name, (select count(*) from insructor where department.dept_name=instructor.dept_name) as num_instructors from department;
+
+ /*13*/
+ Create view  faculty as select id, name,dept_name from instructor
+
+ /*14*/
+ create view physics_2009 as select course.course_id,sec_id,building,room_number from course,section where course.course_id=section.course_id and course.dept_name=’Physics’ and section.semester=’second’ and section.year=209. 
+
+ /*15*/
+ Create view dept_tot_sal(dept_name,tot_salary) as select dept_name, sum(salary) from instructor group by dept_name;
+
+insert into faculty values(‘12121’,’Ram’,’Music’);
+For salary null value would be inserted.
+
+select * from faculty;
+
+select course_id from physics_2009 where building =’Watson’; 
+
+/*16*/
